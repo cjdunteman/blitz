@@ -11,16 +11,18 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
     // thread pool
-    let pool = ThreadPool::new(4);
+    let pool = ThreadPool::new(2);
 
     // process each connection and produce a series of streams to handle
-    for stream in listener.incoming() {
+    for stream in listener.incoming().take(2) {
         let stream = stream.unwrap();
 
         pool.execute(|| {
             handle_connection(stream);
         });
     }
+
+    println!("Shutting down.");
 }
 
 // read data from TCP stream and print it
